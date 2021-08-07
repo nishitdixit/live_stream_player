@@ -53,111 +53,115 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
         child: Stack(
           children: <Widget>[
             buildSpeed(),
-            Positioned(
-                right: 0,
-                bottom: 100,
-                top: 100,
-                child: RotatedBox(
-                  quarterTurns: 3,
-                  child: ValueListenableBuilder<double>(
-                    valueListenable: widget.volume,
-                    builder: (context, currentVolume, child) => Actions(
-                      actions: {
-                        DownButtonIntent: CallbackAction<DownButtonIntent>(
-                            onInvoke: (intent) =>
-                                _fullscreenButtonFocusNode.requestFocus()),
-                        RightButtonIntent: CallbackAction<RightButtonIntent>(
-                            onInvoke: (intent) => changeVideoVolume(
-                                widget.controller.value.volume + 0.1)),
-                        LeftButtonIntent: CallbackAction<LeftButtonIntent>(
-                            onInvoke: (intent) => changeVideoVolume(
-                                widget.controller.value.volume - 0.1)),
-                      },
-                      child: Focus(
-                        focusNode: _volumeBarFocusNode,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: _volumeBarFocusNode.hasFocus
-                                  ? Border.all(width: 5)
-                                  : null),
-                          child: Slider(
-                              value: currentVolume,
-                              onChanged: changeVideoVolume),
-                        ),
-                      ),
-                    ),
-                  ),
-                )),
-            Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Row(
-                  children: [
-                    SizedBox(
-                        child: Actions(
-                      actions: {
-                        EnterButtonIntent: CallbackAction<EnterButtonIntent>(
-                            onInvoke: (intent) => toggleVideoPlayState()),
-                        // UpButtonIntent: CallbackAction<UpButtonIntent>(
-                        //     onInvoke: (intent) => FocusScope.of(context)
-                        //         .requestFocus(_speedButtonFocusNode)),
-                        RightButtonIntent: CallbackAction<RightButtonIntent>(
-                            onInvoke: (intent) => FocusScope.of(context)
-                                .requestFocus(_fullscreenButtonFocusNode)),
-                      },
-                      child: Focus(
-                        focusNode: _playPauseButtonFocusNode,
-                        autofocus: true,
-                        child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: toggleVideoPlayState,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    border: _playPauseButtonFocusNode.hasFocus
-                                        ? Border.all(width: 5)
-                                        : null),
-                                child: buildPlay())),
-                      ),
-                    )),
-                    Expanded(child: buildIndicator()),
-                    const SizedBox(width: 12),
-                    Actions(
-                      actions: {
-                        EnterButtonIntent: CallbackAction<EnterButtonIntent>(
-                            onInvoke: (intent) => widget.onClickedFullScreen()),
-                        UpButtonIntent: CallbackAction<UpButtonIntent>(
-                            onInvoke: (intent) => FocusScope.of(context)
-                                .requestFocus(_volumeBarFocusNode)),
-                        LeftButtonIntent: CallbackAction<LeftButtonIntent>(
-                            onInvoke: (intent) => FocusScope.of(context)
-                                .requestFocus(_playPauseButtonFocusNode)),
-                      },
-                      child: Focus(
-                        // autofocus: true,
-                        focusNode: _fullscreenButtonFocusNode,
-                        child: GestureDetector(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: _fullscreenButtonFocusNode.hasFocus
-                                    ? Border.all(width: 5)
-                                    : null),
-                            child: Icon(
-                              Icons.fullscreen,
-                              color: Colors.white,
-                              size: 70,
-                            ),
-                          ),
-                          onTap: widget.onClickedFullScreen,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                )),
+            buildVolumeBar(),
+            buildPlayPauseButton(context),
           ],
         ),
       );
+
+  Positioned buildPlayPauseButton(BuildContext context) {
+    return Positioned(
+        bottom: 0,
+        left: 0,
+        right: 0,
+        child: Row(
+          children: [
+            SizedBox(
+                child: Actions(
+              actions: {
+                EnterButtonIntent: CallbackAction<EnterButtonIntent>(
+                    onInvoke: (intent) => toggleVideoPlayState()),
+                RightButtonIntent: CallbackAction<RightButtonIntent>(
+                    onInvoke: (intent) => FocusScope.of(context)
+                        .requestFocus(_fullscreenButtonFocusNode)),
+              },
+              child: Focus(
+                focusNode: _playPauseButtonFocusNode,
+                autofocus: true,
+                child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: toggleVideoPlayState,
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: _playPauseButtonFocusNode.hasFocus
+                                ? Border.all(width: 5, color: Color(0xFFEB1555))
+                                : null),
+                        child: buildPlay())),
+              ),
+            )),
+            Expanded(child: buildIndicator()),
+            const SizedBox(width: 12),
+            Actions(
+              actions: {
+                EnterButtonIntent: CallbackAction<EnterButtonIntent>(
+                    onInvoke: (intent) => widget.onClickedFullScreen()),
+                UpButtonIntent: CallbackAction<UpButtonIntent>(
+                    onInvoke: (intent) => FocusScope.of(context)
+                        .requestFocus(_volumeBarFocusNode)),
+                LeftButtonIntent: CallbackAction<LeftButtonIntent>(
+                    onInvoke: (intent) => FocusScope.of(context)
+                        .requestFocus(_playPauseButtonFocusNode)),
+              },
+              child: Focus(
+                // autofocus: true,
+                focusNode: _fullscreenButtonFocusNode,
+                child: GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: _fullscreenButtonFocusNode.hasFocus
+                            ? Border.all(width: 5, color: Color(0xFFEB1555))
+                            : null),
+                    child: Icon(
+                      Icons.fullscreen,
+                      color: Colors.white,
+                      size: 70,
+                    ),
+                  ),
+                  onTap: widget.onClickedFullScreen,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+        ));
+  }
+
+  Positioned buildVolumeBar() {
+    return Positioned(
+        right: 0,
+        bottom: 100,
+        top: 100,
+        child: RotatedBox(
+          quarterTurns: 3,
+          child: ValueListenableBuilder<double>(
+            valueListenable: widget.volume,
+            builder: (context, currentVolume, child) => Actions(
+              actions: {
+                DownButtonIntent: CallbackAction<DownButtonIntent>(
+                    onInvoke: (intent) =>
+                        _fullscreenButtonFocusNode.requestFocus()),
+                RightButtonIntent: CallbackAction<RightButtonIntent>(
+                    onInvoke: (intent) => changeVideoVolume(
+                        widget.controller.value.volume + 0.1)),
+                LeftButtonIntent: CallbackAction<LeftButtonIntent>(
+                    onInvoke: (intent) => changeVideoVolume(
+                        widget.controller.value.volume - 0.1)),
+              },
+              child: Focus(
+                focusNode: _volumeBarFocusNode,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: _volumeBarFocusNode.hasFocus
+                          ? Border.all(width: 5, color: Color(0xFFEB1555))
+                          : null),
+                  child: Slider(
+                      value: currentVolume, onChanged: changeVideoVolume),
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
 
   void changeVideoVolume(newValue) {
     if (newValue < 0) newValue = 0.0;

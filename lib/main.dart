@@ -10,7 +10,6 @@ import 'package:live_stream_player/widgets/camera_preview.dart';
 import 'package:live_stream_player/widgets/video_player_controls.dart';
 import 'package:video_player/video_player.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock/wakelock.dart';
